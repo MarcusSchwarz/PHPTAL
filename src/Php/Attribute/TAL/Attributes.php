@@ -4,20 +4,25 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\TAL;
 
 use PhpTal\Dom\Defs;
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\Php\TalesChainExecutor;
+use PhpTal\Php\TalesChainExecutorInterface;
 use PhpTal\Php\TalesChainReaderInterface;
 use PhpTal\Php\TalesInternal;
 use PhpTal\PHPTAL;
@@ -40,10 +45,9 @@ use PhpTal\TalNamespace\Builtin;
  *
  * IN PHPTAL: attributes will not work on structured replace.
  *
- * @package PHPTAL
- * @author Laurent Bedubourg <lbedubourg@motion-twin.com>
+ * @interal
  */
-class Attributes extends Attribute implements TalesChainReaderInterface
+final class Attributes extends Attribute implements TalesChainReaderInterface
 {
     /**
      * before creates several variables that need to be freed in after
@@ -72,13 +76,13 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      * @throws \ReflectionException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         // split attributes using ; delimiter
         foreach ($codewriter->splitExpression($this->expression) as $exp) {
@@ -90,7 +94,7 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param string $qname
      * @param string $expression
      *
@@ -98,7 +102,7 @@ class Attributes extends Attribute implements TalesChainReaderInterface
      * @throws \PhpTal\Exception\PhpTalException
      * @throws \ReflectionException
      */
-    private function prepareAttribute(CodeWriter $codewriter, string $qname, string $expression): void
+    private function prepareAttribute(CodeWriterInterface $codewriter, string $qname, string $expression): void
     {
         $tales_code = $this->extractEchoType($expression);
         $code = $codewriter->evaluateExpression($tales_code);
@@ -133,11 +137,11 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     /**
      * attribute will be output regardless of its evaluated value. NULL behaves just like "".
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param string $qname
      * @param string $code
      */
-    private function prepareAttributeUnconditional(CodeWriter $codewriter, string $qname, string $code): void
+    private function prepareAttributeUnconditional(CodeWriterInterface $codewriter, string $qname, string $code): void
     {
         // regular attribute which value is the evaluation of $code
         $attkey = $this->getVarName($codewriter);
@@ -153,13 +157,13 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     /**
      * If evaluated value of attribute is NULL, it will not be output at all.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param string $qname
      * @param string $code
      *
      * @throws \PhpTal\Exception\PhpTalException
      */
-    private function prepareAttributeConditional(CodeWriter $codewriter, string $qname, string $code): void
+    private function prepareAttributeConditional(CodeWriterInterface $codewriter, string $qname, string $code): void
     {
         // regular attribute which value is the evaluation of $code
         $attkey = $this->getVarName($codewriter);
@@ -182,14 +186,14 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param string $qname
      * @param array $chain
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    private function prepareChainedAttribute(CodeWriter $codewriter, string $qname, array $chain): void
+    private function prepareChainedAttribute(CodeWriterInterface $codewriter, string $qname, array $chain): void
     {
         $this->default_escaped = false;
         $this->attribute = $qname;
@@ -204,14 +208,14 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param string $qname
      * @param string $code
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    private function prepareBooleanAttribute(CodeWriter $codewriter, string $qname, string $code): void
+    private function prepareBooleanAttribute(CodeWriterInterface $codewriter, string $qname, string $code): void
     {
         $attkey = $this->getVarName($codewriter);
 
@@ -229,11 +233,11 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return string
      */
-    private function getVarName(CodeWriter $codewriter): string
+    private function getVarName(CodeWriterInterface $codewriter): string
     {
         $var = $codewriter->createTempVariable();
         $this->vars_to_recycle[] = $var;
@@ -244,12 +248,12 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
         foreach ($this->vars_to_recycle as $var) {
             $codewriter->recycleTempVariable($var);
@@ -257,11 +261,12 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
+     *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainNothingKeyword(TalesChainExecutor $executor): void
+    public function talesChainNothingKeyword(TalesChainExecutorInterface $executor): void
     {
         $codewriter = $executor->getCodeWriter();
         $executor->doElse();
@@ -273,12 +278,12 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainDefaultKeyword(TalesChainExecutor $executor): void
+    public function talesChainDefaultKeyword(TalesChainExecutorInterface $executor): void
     {
         $codewriter = $executor->getCodeWriter();
         $executor->doElse();
@@ -290,14 +295,14 @@ class Attributes extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      * @param string $expression
      * @param bool $islast
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainPart(TalesChainExecutor $executor, string $expression, bool $islast): void
+    public function talesChainPart(TalesChainExecutorInterface $executor, string $expression, bool $islast): void
     {
         $codewriter = $executor->getCodeWriter();
 

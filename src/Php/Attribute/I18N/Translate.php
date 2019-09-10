@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\I18N;
@@ -20,9 +24,10 @@ use PhpTal\Dom\Node;
 use PhpTal\Dom\Text;
 use PhpTal\Exception\TemplateException;
 use PhpTal\Php\Attribute;
-use PhpTal\Php\Attribute\TAL\Content;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\Php\TalesChainExecutor;
+use PhpTal\Php\TalesChainExecutorInterface;
+use PhpTal\Php\TalesChainReaderInterface;
 use PhpTal\TalNamespace\Builtin;
 
 /**
@@ -36,12 +41,12 @@ use PhpTal\TalNamespace\Builtin;
  * Otherwise, the value of the element gives the message ID.
  *
  *
- * @package PHPTAL
+ * @internal
  */
-class Translate extends Content
+final class Translate extends Attribute implements TalesChainReaderInterface
 {
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      *
@@ -53,7 +58,7 @@ class Translate extends Content
      * @throws \PhpTal\Exception\UnknownModifierException
      * @throws \ReflectionException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         $escape = true;
         $this->echoType = Attribute::ECHO_TEXT;
@@ -96,15 +101,16 @@ class Translate extends Content
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
+     *
      * @return void
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      * @param mixed $expression
      * @param bool $islast
      *
@@ -112,7 +118,7 @@ class Translate extends Content
      * @throws \PhpTal\Exception\ConfigurationException
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainPart(TalesChainExecutor $executor, string $expression, bool $islast): void
+    public function talesChainPart(TalesChainExecutorInterface $executor, string $expression, bool $islast): void
     {
         $codewriter = $executor->getCodeWriter();
 
@@ -127,6 +133,52 @@ class Translate extends Content
             $executor->doElse();
             $codewriter->pushCode("echo $expression");
         }
+    }
+
+    /**
+     * @param TalesChainExecutorInterface $executor
+     *
+     * @return void
+     */
+    public function talesChainNothingKeyword(TalesChainExecutorInterface $executor): void
+    {
+        $executor->breakChain();
+    }
+
+    /**
+     * @param TalesChainExecutorInterface $executor
+     *
+     * @return void
+     * @throws \PhpTal\Exception\PhpTalException
+     */
+    public function talesChainDefaultKeyword(TalesChainExecutorInterface $executor): void
+    {
+        $executor->doElse();
+        $this->generateDefault($executor->getCodeWriter());
+        $executor->breakChain();
+    }
+
+    /**
+     * @param CodeWriterInterface $codewriter
+     *
+     * @return void
+     */
+    private function generateDefault(CodeWriterInterface $codewriter): void
+    {
+        $this->phpelement->generateContent($codewriter, true);
+    }
+
+    /**
+     * @param CodeWriterInterface $codewriter
+     * @param array $code
+     *
+     * @return void
+     * @throws \PhpTal\Exception\PhpTalException
+     */
+    private function generateChainedContent(CodeWriterInterface $codewriter, array $code): void
+    {
+        // todo yep, indeed, this thing executes logic, a lot of it, in the constructor
+        new TalesChainExecutor($codewriter, $code, $this);
     }
 
     /**
@@ -170,7 +222,7 @@ class Translate extends Content
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param Node|Element $tag
      *
      * @return void
@@ -178,7 +230,7 @@ class Translate extends Content
      * @throws \PhpTal\Exception\PhpTalException
      * @throws TemplateException
      */
-    private function prepareNames(CodeWriter $codewriter, Node $tag): void
+    private function prepareNames(CodeWriterInterface $codewriter, Node $tag): void
     {
         foreach ($tag->childNodes as $child) {
             if ($child instanceof Element) {

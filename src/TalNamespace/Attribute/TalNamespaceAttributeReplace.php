@@ -16,24 +16,13 @@ declare(strict_types=1);
  * @link     https://github.com/SC-Networks/PHPTAL
  */
 
-namespace PhpTal\Dom;
-
-use PhpTal\Php\CodeWriterInterface;
+namespace PhpTal\TalNamespace\Attribute;
 
 /**
- * @internal
+ * This type of attribute replaces element entirely
+ * @package PHPTAL
  */
-class Comment extends Node
+class TalNamespaceAttributeReplace extends TalNamespaceAttribute
 {
-    /**
-     * use CodeWriter to compile this element to PHP code
-     *
-     * @param CodeWriterInterface $codewriter
-     */
-    public function generateCode(CodeWriterInterface $codewriter): void
-    {
-        if (!preg_match('/^\s*!/', $this->getValueEscaped())) {
-            $codewriter->pushHTML('<!--'.$this->getValueEscaped().'-->');
-        }
-    }
+    // noop
 }

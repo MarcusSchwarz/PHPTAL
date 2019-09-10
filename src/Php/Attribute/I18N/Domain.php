@@ -4,18 +4,22 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\I18N;
 
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 
 /**
  * i18n:domain
@@ -25,14 +29,14 @@ use PhpTal\Php\CodeWriter;
  * default domain. The value of the attribute is used directly; it is not
  * a TALES expression.
  *
- * @package PHPTAL
+ * @internal
  */
-class Domain extends Attribute
+final class Domain extends Attribute
 {
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\ConfigurationException
@@ -41,7 +45,7 @@ class Domain extends Attribute
      * @throws \PhpTal\Exception\UnknownModifierException
      * @throws \ReflectionException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         // ensure a domain stack exists or create it
         $codewriter->doIf('!isset($_i18n_domains)');
@@ -58,12 +62,12 @@ class Domain extends Attribute
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\ConfigurationException
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
         // restore domain
         $code = $codewriter->getTranslatorReference() . '->useDomain(array_pop($_i18n_domains))';

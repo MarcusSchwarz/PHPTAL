@@ -4,20 +4,25 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\TAL;
 
 use PhpTal\Exception\TemplateException;
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\Php\TalesChainExecutor;
+use PhpTal\Php\TalesChainExecutorInterface;
 use PhpTal\Php\TalesChainReaderInterface;
 use PhpTal\Php\TalesInternal;
 
@@ -38,10 +43,9 @@ use PhpTal\Php\TalesInternal;
  *
  *
  *
- * @package PHPTAL
- * @author Laurent Bedubourg <lbedubourg@motion-twin.com>
+ * @internal
  */
-class Define extends Attribute implements TalesChainReaderInterface
+final class Define extends Attribute implements TalesChainReaderInterface
 {
     /**
      * @var string
@@ -77,7 +81,7 @@ class Define extends Attribute implements TalesChainReaderInterface
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\ParserException
@@ -85,7 +89,7 @@ class Define extends Attribute implements TalesChainReaderInterface
      * @throws \PhpTal\Exception\UnknownModifierException
      * @throws \ReflectionException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         $expressions = $codewriter->splitExpression($this->expression);
         $definesAnyNonGlobalVars = false;
@@ -134,12 +138,12 @@ class Define extends Attribute implements TalesChainReaderInterface
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
         if ($this->tmp_content_var) {
             $codewriter->recycleTempVariable($this->tmp_content_var);
@@ -150,25 +154,25 @@ class Define extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param array $parts
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    private function chainedDefine(CodeWriter $codewriter, $parts): void
+    private function chainedDefine(CodeWriterInterface $codewriter, $parts): void
     {
         new TalesChainExecutor($codewriter, $parts, $this);
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      *
      * @return void
      * @throws TemplateException
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainNothingKeyword(TalesChainExecutor $executor): void
+    public function talesChainNothingKeyword(TalesChainExecutorInterface $executor): void
     {
         if (!$this->chainPartGenerated) {
             throw new TemplateException(
@@ -184,13 +188,13 @@ class Define extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      *
      * @return void
      * @throws TemplateException
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainDefaultKeyword(TalesChainExecutor $executor): void
+    public function talesChainDefaultKeyword(TalesChainExecutorInterface $executor): void
     {
         if (!$this->chainPartGenerated) {
             throw new TemplateException(
@@ -206,14 +210,14 @@ class Define extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      * @param string $expression
      * @param bool $islast
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainPart(TalesChainExecutor $executor, string $expression, bool $islast): void
+    public function talesChainPart(TalesChainExecutorInterface $executor, string $expression, bool $islast): void
     {
         $this->chainPartGenerated = true;
 
@@ -239,6 +243,9 @@ class Define extends Attribute implements TalesChainReaderInterface
     /**
      * Parse the define expression, already splitted in sub parts by ';'.
      *
+     * {@interal this should be private, but is currently massively called in tests.
+     *          I guess that is the reason why it is public in the first place.}
+     *
      * @param string $exp
      *
      * @return array
@@ -263,11 +270,11 @@ class Define extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    private function bufferizeContent(CodeWriter $codewriter): void
+    private function bufferizeContent(CodeWriterInterface $codewriter): void
     {
         if (!$this->buffered) {
             $this->tmp_content_var = $codewriter->createTempVariable();
@@ -280,12 +287,12 @@ class Define extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param string $code
      *
      * @return void
      */
-    private function doDefineVarWith(CodeWriter $codewriter, string $code): void
+    private function doDefineVarWith(CodeWriterInterface $codewriter, string $code): void
     {
         if ($this->defineScope === 'global') {
             $codewriter->doSetVar('$tpl->getGlobalContext()->' . $this->defineVar, $code);

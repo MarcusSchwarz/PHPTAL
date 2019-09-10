@@ -4,11 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
+ * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\PreFilter;
@@ -25,8 +30,11 @@ use PhpTal\TalNamespace\Builtin;
  * Removes all unnecessary whitespace from XHTML documents.
  *
  * extends Normalize only to re-use helper methods
+ * @internal
+ * {@internal this should not extend Normalize, maybe we should introduce a new abstract class,
+ * or try to extend PreFilter}
  */
-class Compress extends Normalize
+final class Compress extends Normalize
 {
     /**
      * keeps track whether last element had trailing whitespace (or didn't need it).

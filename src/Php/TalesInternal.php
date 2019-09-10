@@ -4,13 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
- * @author   Moritz Bechler <mbechler@eenterphace.org>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php;
@@ -47,16 +50,12 @@ use PhpTal\TalesRegistry;
  *
  *      * repeat - the repeat variables (see RepeatVariable).
  *
- *
+ * @interal
  */
-
-/**
- * @package PHPTAL
- */
-class TalesInternal implements TalesInterface
+final class TalesInternal implements TalesInterface
 {
-    public const DEFAULT_KEYWORD = 'new \PhpTal\DefaultKeyword';
-    public const NOTHING_KEYWORD = 'new \PhpTal\NothingKeyword';
+    public const DEFAULT_KEYWORD = 'new \PhpTal\Keywords\DefaultKeyword';
+    public const NOTHING_KEYWORD = 'new \PhpTal\Keywords\NothingKeyword';
 
     /**
      * @var bool

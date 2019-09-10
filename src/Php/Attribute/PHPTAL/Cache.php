@@ -4,19 +4,23 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\PHPTAL;
 
 use PhpTal\Exception\ParserException;
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 
 /**
  *  phptal:cache (note that's not tal:cache) caches element's HTML for a given time. Time is a number with 'd', 'h', 'm' or 's' suffix.
@@ -35,9 +39,9 @@ use PhpTal\Php\CodeWriter;
  *  <div phptal:cache="3h">...</div> <!-- <div> to be evaluated at most once per 3 hours. -->
  *  <ul phptal:cache="1d per object/id">...</ul> <!-- <ul> be cached for one day, separately for each object. -->
  *
- * @package PHPTAL
+ * @internal
  */
-class Cache extends Attribute
+final class Cache extends Attribute
 {
     /**
      * @var string
@@ -47,7 +51,7 @@ class Cache extends Attribute
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws ParserException
@@ -55,7 +59,7 @@ class Cache extends Attribute
      * @throws \PhpTal\Exception\UnknownModifierException
      * @throws \ReflectionException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         // number or variable name followed by time unit
         // optional per expression
@@ -128,12 +132,12 @@ class Cache extends Attribute
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
         $codewriter->doEval('file_put_contents(' . $this->cache_filename_var . ', ob_get_flush())');
         $codewriter->doElse();

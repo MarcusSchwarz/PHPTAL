@@ -4,23 +4,27 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Dom;
 
-use PhpTal\TalNamespace;
 use PhpTal\TalNamespace\Builtin;
 use PhpTal\TalNamespace\I18N;
 use PhpTal\TalNamespace\METAL;
 use PhpTal\TalNamespace\PHPTAL;
 use PhpTal\TalNamespace\TAL;
-use PhpTal\TalNamespaceAttribute;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttribute;
+use PhpTal\TalNamespace\TalNamespace;
 
 /**
  * PHPTAL constants.
@@ -31,10 +35,9 @@ use PhpTal\TalNamespaceAttribute;
  * This behaviour is mainly useful to remove builtin namespaces
  * and provide custom ones.
  *
- * @package PHPTAL
- * @author Laurent Bedubourg <lbedubourg@motion-twin.com>
+ * @internal
  */
-class Defs
+final class Defs
 {
 
     /**
@@ -168,28 +171,6 @@ class Defs
     public function prefixToNamespaceURI($prefix): ?string
     {
         return $this->prefix_to_uri[$prefix] ?? null;
-    }
-
-    /**
-     * gives typical prefix for given (built-in) namespace
-     *
-     * @param string $uri
-     *
-     * @return bool
-     */
-    public function namespaceURIToPrefix($uri): bool
-    {
-        return (bool) array_search($uri, $this->prefix_to_uri, true);
-    }
-
-    /**
-     * array prefix => uri for prefixes that don't have to be declared in PHPTAL
-     *
-     * @return array
-     */
-    public function getPredefinedPrefixes(): array
-    {
-        return $this->prefix_to_uri;
     }
 
     /**

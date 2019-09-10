@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php;
@@ -22,10 +26,9 @@ use PhpTal\PHPTAL;
 /**
  * Helps generate php representation of a template.
  *
- * @package PHPTAL
- * @author Laurent Bedubourg <lbedubourg@motion-twin.com>
+ * @internal
  */
-class CodeWriter
+final class CodeWriter implements CodeWriterInterface
 {
     /**
      * max id of variable to give as temp
@@ -46,7 +49,7 @@ class CodeWriter
     private $known_functions = [];
 
     /**
-     * @var State
+     * @var StateInterface
      */
     private $state;
 
@@ -97,9 +100,10 @@ class CodeWriter
 
     /**
      * CodeWriter constructor.
-     * @param State $state
+     *
+     * @param StateInterface $state
      */
-    public function __construct(State $state)
+    public function __construct(StateInterface $state)
     {
         $this->state = $state;
     }
@@ -782,7 +786,7 @@ class CodeWriter
      */
     private function popCodeWriterContext(): void
     {
-        /** @var CodeWriter $oldContext TODO ???*/
+        /** @var CodeWriterInterface $oldContext TODO ??? */
         $oldContext = array_pop($this->contexts);
         $this->result = $oldContext->result;
         $this->indentation = $oldContext->indentation;

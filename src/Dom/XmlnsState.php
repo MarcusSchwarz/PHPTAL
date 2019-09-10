@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Dom;
@@ -23,10 +27,9 @@ use PhpTal\TalNamespace\Builtin;
  * xmlns:t="http://xml.zope.org/namespaces/tal" and later use t:repeat instead
  * of tal:repeat.
  *
- * @package PHPTAL
- * @author Laurent Bedubourg <lbedubourg@motion-twin.com>
+ * @internal
  */
-class XmlnsState
+final class XmlnsState
 {
 
     /**

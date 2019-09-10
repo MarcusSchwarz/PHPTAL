@@ -1,26 +1,29 @@
 <?php
 declare(strict_types=1);
 
-
 /**
  * PHPTAL templating engine
+ *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
  *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Dom;
 
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 
 /**
  * Document node abstract class.
  *
- * @package PHPTAL
+ * @internal
  */
 abstract class Node
 {
@@ -138,9 +141,9 @@ abstract class Node
     /**
      * use CodeWriter to compile this element to PHP code
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      */
-    abstract public function generateCode(CodeWriter $codewriter): void;
+    abstract public function generateCode(CodeWriterInterface $codewriter): void;
 
     /**
      * @return string

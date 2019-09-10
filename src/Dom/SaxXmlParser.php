@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Dom;
@@ -32,10 +36,10 @@ use PhpTal\Exception\TemplateException;
  * This parser failed to enforce some XML well-formedness constraints,
  * and there are ill-formed templates "in the wild" because of this.
  *
- * @package PHPTAL
+ * @internal
  * @see PHPTAL_DOM_DocumentBuilder
  */
-class SaxXmlParser
+final class SaxXmlParser
 {
 
     // available parser states
@@ -530,27 +534,11 @@ class SaxXmlParser
     }
 
     /**
-     * @return string
-     */
-    public function getSourceFile(): string
-    {
-        return $this->file;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLineNumber(): int
-    {
-        return $this->line;
-    }
-
-    /**
      * @param string $c
-     * 
+     *
      * @return bool
      */
-    public static function isWhiteChar($c): bool
+    private static function isWhiteChar($c): bool
     {
         return strpos(" \t\n\r\0", $c) !== false;
     }
@@ -561,7 +549,7 @@ class SaxXmlParser
      * @return void
      * @throws ParserException
      */
-    protected function raiseError(string $errStr): void
+    private function raiseError(string $errStr): void
     {
         throw new ParserException($errStr, $this->file, $this->line);
     }

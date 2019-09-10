@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\I18N;
@@ -17,7 +21,7 @@ namespace PhpTal\Php\Attribute\I18N;
 use PhpTal\Dom\Attr;
 use PhpTal\Exception\TemplateException;
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\Php\TalesInternal;
 
 /**
@@ -63,17 +67,19 @@ use PhpTal\Php\TalesInternal;
  *
  *
  *
- * @package PHPTAL
+ * @internal
  */
-class Attributes extends Attribute
+final class Attributes extends Attribute
 {
     /**
      * Called before element printing.
-     * @param CodeWriter $codewriter
+     *
+     * @param CodeWriterInterface $codewriter
+     *
      * @throws TemplateException
      * @throws \PhpTal\Exception\ConfigurationException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         // split attributes to translate
         foreach ($codewriter->splitExpression($this->expression) as $exp) {
@@ -112,14 +118,15 @@ class Attributes extends Attribute
 
     /**
      * Called after element printing.
-     * @param CodeWriter $codewriter
+     *
+     * @param CodeWriterInterface $codewriter
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param string $key - unescaped string (not PHP code) for the key
      *
      * @return string
@@ -128,7 +135,7 @@ class Attributes extends Attribute
      * @throws \PhpTal\Exception\UnknownModifierException
      * @throws \ReflectionException
      */
-    private function getTranslationCode(CodeWriter $codewriter, string $key): string
+    private function getTranslationCode(CodeWriterInterface $codewriter, string $key): string
     {
         $code = '';
         if (preg_match_all('/\$\{(.*?)\}/', $key, $m)) {

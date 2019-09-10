@@ -4,20 +4,21 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php;
 
-/**
- * @package PHPTAL
- */
-class TalesChainExecutor
+class TalesChainExecutor implements TalesChainExecutorInterface
 {
     public const CHAIN_BREAK = 1;
     public const CHAIN_CONT = 2;
@@ -38,7 +39,7 @@ class TalesChainExecutor
     private $chainStarted = false;
 
     /**
-     * @var CodeWriter
+     * @var CodeWriterInterface
      */
     private $codewriter;
 
@@ -47,17 +48,16 @@ class TalesChainExecutor
      */
     private $reader;
 
-
     /**
      * TalesChainExecutor constructor.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param array $chain
      * @param TalesChainReaderInterface $reader
      *
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function __construct(CodeWriter $codewriter, array $chain, TalesChainReaderInterface $reader)
+    public function __construct(CodeWriterInterface $codewriter, array $chain, TalesChainReaderInterface $reader)
     {
         $this->chain = $chain;
         $this->codewriter = $codewriter;
@@ -66,9 +66,9 @@ class TalesChainExecutor
     }
 
     /**
-     * @return CodeWriter
+     * @return CodeWriterInterface
      */
-    public function getCodeWriter(): CodeWriter
+    public function getCodeWriter(): CodeWriterInterface
     {
         return $this->codewriter;
     }

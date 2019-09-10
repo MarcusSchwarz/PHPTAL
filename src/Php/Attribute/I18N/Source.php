@@ -1,19 +1,25 @@
 <?php
+declare(strict_types=1);
+
 /**
  * PHPTAL templating engine
+ *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
  *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\I18N;
 
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 
 /**
  * i18n:source
@@ -23,20 +29,20 @@ use PhpTal\Php\CodeWriter;
  *  this information to the translation services.
  *
  *
- * @package PHPTAL
+ * @internal
  */
-class Source extends Attribute
+final class Source extends Attribute
 {
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\ConfigurationException
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         // ensure that a sources stack exists or create it
         $codewriter->doIf('!isset($_i18n_sources)');
@@ -52,12 +58,12 @@ class Source extends Attribute
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\ConfigurationException
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
         // restore source
         $code = $codewriter->getTranslatorReference() . '->setSource(array_pop($_i18n_sources))';

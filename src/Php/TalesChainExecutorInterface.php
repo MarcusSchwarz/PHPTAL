@@ -18,28 +18,34 @@ declare(strict_types=1);
 
 namespace PhpTal\Php;
 
-interface TalesChainReaderInterface
+interface TalesChainExecutorInterface
 {
     /**
-     * @param TalesChainExecutorInterface $executor
-     *
-     * @return void
+     * @return CodeWriterInterface
      */
-    public function talesChainNothingKeyword(TalesChainExecutorInterface $executor): void;
+    public function getCodeWriter(): CodeWriterInterface;
 
     /**
-     * @param TalesChainExecutorInterface $executor
+     * @param string $condition
      *
      * @return void
+     * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainDefaultKeyword(TalesChainExecutorInterface $executor): void;
+    public function doIf(string $condition): void;
 
     /**
-     * @param TalesChainExecutorInterface $executor
-     * @param string $expression
-     * @param bool $islast
-     *
+     * @return void
+     * @throws \PhpTal\Exception\PhpTalException
+     */
+    public function doElse(): void;
+
+    /**
      * @return void
      */
-    public function talesChainPart(TalesChainExecutorInterface $executor, string $expression, bool $islast): void;
+    public function breakChain(): void;
+
+    /**
+     * @return void
+     */
+    public function continueChain(): void;
 }

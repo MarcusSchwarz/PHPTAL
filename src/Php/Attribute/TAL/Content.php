@@ -4,19 +4,24 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\TAL;
 
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\Php\TalesChainExecutor;
+use PhpTal\Php\TalesChainExecutorInterface;
 use PhpTal\Php\TalesChainReaderInterface;
 use PhpTal\Php\TalesInternal;
 
@@ -31,15 +36,14 @@ use PhpTal\Php\TalesInternal;
  *
  *
  *
- * @package PHPTAL
- * @author Laurent Bedubourg <lbedubourg@motion-twin.com>
+ * @internal
  */
-class Content extends Attribute implements TalesChainReaderInterface
+    final class Content extends Attribute implements TalesChainReaderInterface
 {
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\ParserException
@@ -47,7 +51,7 @@ class Content extends Attribute implements TalesChainReaderInterface
      * @throws \PhpTal\Exception\UnknownModifierException
      * @throws \ReflectionException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         $expression = $this->extractEchoType($this->expression);
 
@@ -73,46 +77,46 @@ class Content extends Attribute implements TalesChainReaderInterface
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    private function generateDefault(CodeWriter $codewriter): void
+    private function generateDefault(CodeWriterInterface $codewriter): void
     {
         $this->phpelement->generateContent($codewriter, true);
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param array $code
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    protected function generateChainedContent(CodeWriter $codewriter, array $code): void
+    protected function generateChainedContent(CodeWriterInterface $codewriter, array $code): void
     {
         // todo yep, indeed, this thing executes logic, a lot of it, in the constructor
         new TalesChainExecutor($codewriter, $code, $this);
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      * @param string $expression
      * @param bool $islast
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainPart(TalesChainExecutor $executor, string $expression, bool $islast): void
+    public function talesChainPart(TalesChainExecutorInterface $executor, string $expression, bool $islast): void
     {
         if (!$islast) {
             $var = $executor->getCodeWriter()->createTempVariable();
@@ -126,22 +130,22 @@ class Content extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      *
      * @return void
      */
-    public function talesChainNothingKeyword(TalesChainExecutor $executor): void
+    public function talesChainNothingKeyword(TalesChainExecutorInterface $executor): void
     {
         $executor->breakChain();
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainDefaultKeyword(TalesChainExecutor $executor): void
+    public function talesChainDefaultKeyword(TalesChainExecutorInterface $executor): void
     {
         $executor->doElse();
         $this->generateDefault($executor->getCodeWriter());

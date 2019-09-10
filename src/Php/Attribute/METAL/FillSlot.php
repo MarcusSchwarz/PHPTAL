@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\METAL;
@@ -18,7 +22,7 @@ use PhpTal\Dom\Attr;
 use PhpTal\Dom\Element;
 use PhpTal\Dom\Node;
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\TalNamespace\Builtin;
 
 /**
@@ -54,10 +58,9 @@ use PhpTal\TalNamespace\Builtin;
  * <?php echo phptal_macro($tpl, 'master_page.html/macros/sidebar'); ? >
  *
  *
- * @package PHPTAL
- * @author Laurent Bedubourg <lbedubourg@motion-twin.com>
+ * @internal
  */
-class FillSlot extends Attribute
+final class FillSlot extends Attribute
 {
     public const CALLBACK_THRESHOLD = 10000;
 
@@ -74,9 +77,9 @@ class FillSlot extends Attribute
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         if ($this->shouldUseCallback()) {
             $function_base_name = 'slot_' . preg_replace('/[^a-z0-9]/', '_', $this->expression) . '_' . (self::$uid++);
@@ -94,11 +97,11 @@ class FillSlot extends Attribute
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
         if ($this->function_name !== null) {
             $codewriter->doEnd();

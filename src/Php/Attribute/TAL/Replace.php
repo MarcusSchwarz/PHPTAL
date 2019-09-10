@@ -4,19 +4,24 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\TAL;
 
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\Php\TalesChainExecutor;
+use PhpTal\Php\TalesChainExecutorInterface;
 use PhpTal\Php\TalesChainReaderInterface;
 use PhpTal\Php\TalesInternal;
 
@@ -34,15 +39,14 @@ use PhpTal\Php\TalesInternal;
  *
  *
  *
- * @package PHPTAL
- * @author Laurent Bedubourg <lbedubourg@motion-twin.com>
+ * @internal
  */
-class Replace extends Attribute implements TalesChainReaderInterface
+final class Replace extends Attribute implements TalesChainReaderInterface
 {
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws \PhpTal\Exception\ParserException
@@ -51,7 +55,7 @@ class Replace extends Attribute implements TalesChainReaderInterface
      * @throws \PhpTal\Exception\UnknownModifierException
      * @throws \ReflectionException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         // tal:replace="" => do nothing and ignore node
         if (trim($this->expression) === '') {
@@ -85,44 +89,44 @@ class Replace extends Attribute implements TalesChainReaderInterface
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
     }
 
     /**
      * support expressions like "foo | bar"
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param array $expArray
      *
      * @throws \PhpTal\Exception\PhpTalException
      */
-    private function replaceByChainedExpression(CodeWriter $codewriter, $expArray)
+    private function replaceByChainedExpression(CodeWriterInterface $codewriter, $expArray)
     {
         new TalesChainExecutor($codewriter, $expArray, $this);
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      *
      * @return void
      */
-    public function talesChainNothingKeyword(TalesChainExecutor $executor): void
+    public function talesChainNothingKeyword(TalesChainExecutorInterface $executor): void
     {
         $executor->continueChain();
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainDefaultKeyword(TalesChainExecutor $executor): void
+    public function talesChainDefaultKeyword(TalesChainExecutorInterface $executor): void
     {
         $executor->doElse();
         $this->generateDefault($executor->getCodeWriter());
@@ -130,14 +134,14 @@ class Replace extends Attribute implements TalesChainReaderInterface
     }
 
     /**
-     * @param TalesChainExecutor $executor
+     * @param TalesChainExecutorInterface $executor
      * @param string $expression
      * @param bool $islast
      *
      * @return void
      * @throws \PhpTal\Exception\PhpTalException
      */
-    public function talesChainPart(TalesChainExecutor $executor, string $expression, bool $islast): void
+    public function talesChainPart(TalesChainExecutorInterface $executor, string $expression, bool $islast): void
     {
         if (!$islast) {
             $var = $executor->getCodeWriter()->createTempVariable();
@@ -152,11 +156,12 @@ class Replace extends Attribute implements TalesChainReaderInterface
 
     /**
      * don't replace - re-generate default content
-     * @param CodeWriter $codewriter
+     *
+     * @param CodeWriterInterface $codewriter
      *
      * @throws \PhpTal\Exception\PhpTalException
      */
-    private function generateDefault(CodeWriter $codewriter): void
+    private function generateDefault(CodeWriterInterface $codewriter): void
     {
         $this->phpelement->generateSurroundHead($codewriter);
         $this->phpelement->generateHead($codewriter);

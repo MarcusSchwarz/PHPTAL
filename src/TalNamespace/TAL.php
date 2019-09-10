@@ -4,24 +4,28 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\TalNamespace;
 
-use PhpTal\TalNamespaceAttributeContent;
-use PhpTal\TalNamespaceAttributeReplace;
-use PhpTal\TalNamespaceAttributeSurround;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttributeContent;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttributeReplace;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttributeSurround;
 
 /**
- * @package PHPTAL
+ * @interal
  */
-class TAL extends Builtin
+final class TAL extends Builtin
 {
     public function __construct()
     {

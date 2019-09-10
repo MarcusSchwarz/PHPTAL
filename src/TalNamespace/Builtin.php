@@ -4,25 +4,28 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\TalNamespace;
 
 use PhpTal\Dom\Element;
 use PhpTal\Php\Attribute;
-use PhpTal\TalNamespace;
-use PhpTal\TalNamespaceAttribute;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttribute;
 
 /**
- * @package PHPTAL
+ * @internal
  */
-class Builtin extends TalNamespace
+abstract class Builtin extends TalNamespace
 {
 
     public const NS_METAL = 'http://xml.zope.org/namespaces/metal';
@@ -33,7 +36,7 @@ class Builtin extends TalNamespace
     public const NS_XHTML = 'http://www.w3.org/1999/xhtml';
 
     /**
-     * @param TalNamespaceAttribute $att
+     * @param \PhpTal\TalNamespace\Attribute\TalNamespaceAttribute $att
      * @param Element $tag
      * @param mixed $expression
      *

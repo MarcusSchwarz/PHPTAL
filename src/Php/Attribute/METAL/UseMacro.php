@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php\Attribute\METAL;
@@ -18,7 +22,7 @@ use PhpTal\Dom\Element;
 use PhpTal\Dom\Node;
 use PhpTal\Exception\TemplateException;
 use PhpTal\Php\Attribute;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\TalNamespace\Builtin;
 
 /**
@@ -38,10 +42,9 @@ use PhpTal\TalNamespace\Builtin;
  *
  *
  *
- * @package PHPTAL
- * @author Laurent Bedubourg <lbedubourg@motion-twin.com>
+ * @internal
  */
-class UseMacro extends Attribute
+final class UseMacro extends Attribute
 {
     /**
      * @var array
@@ -55,7 +58,7 @@ class UseMacro extends Attribute
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws TemplateException
@@ -64,7 +67,7 @@ class UseMacro extends Attribute
      * @throws \PhpTal\Exception\UnknownModifierException
      * @throws \ReflectionException
      */
-    public function before(CodeWriter $codewriter): void
+    public function before(CodeWriterInterface $codewriter): void
     {
         $this->pushSlots($codewriter);
 
@@ -102,11 +105,11 @@ class UseMacro extends Attribute
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    public function after(CodeWriter $codewriter): void
+    public function after(CodeWriterInterface $codewriter): void
     {
     }
 
@@ -123,9 +126,9 @@ class UseMacro extends Attribute
      * for the general layout, fill the menu slot and let caller templates
      * fill the parent content slot without interfering.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      */
-    private function pushSlots(CodeWriter $codewriter): void
+    private function pushSlots(CodeWriterInterface $codewriter): void
     {
         if (!$this->phpelement->hasAttributeNS(Builtin::NS_METAL, 'define-macro')) {
             $codewriter->pushCode('$ctx->pushSlots()');
@@ -136,9 +139,9 @@ class UseMacro extends Attribute
      * generate code that pops macro slots
      * (restore slots if not inherited macro)
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      */
-    private function popSlots(CodeWriter $codewriter): void
+    private function popSlots(CodeWriterInterface $codewriter): void
     {
         if (!$this->phpelement->hasAttributeNS(Builtin::NS_METAL, 'define-macro')) {
             $codewriter->pushCode('$ctx->popSlots()');
@@ -147,13 +150,14 @@ class UseMacro extends Attribute
 
     /**
      * recursively generates code for slots
-     * @param CodeWriter $codewriter
+     *
+     * @param CodeWriterInterface $codewriter
      * @param Node|Element $phpelement
      *
      * @throws \PhpTal\Exception\PhpTalException
      * @throws TemplateException
      */
-    private function generateFillSlots(CodeWriter $codewriter, Node $phpelement): void
+    private function generateFillSlots(CodeWriterInterface $codewriter, Node $phpelement): void
     {
         if ($phpelement instanceof Element === false) {
             return;

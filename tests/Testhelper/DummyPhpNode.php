@@ -19,7 +19,7 @@ declare(strict_types=1);
 namespace Tests\Testhelper;
 
 use PhpTal\Dom\Element;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 
 class DummyPhpNode extends Element
 {
@@ -31,9 +31,9 @@ class DummyPhpNode extends Element
     /**
      * use CodeWriter to compile this element to PHP code
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      */
-    public function generateCode(CodeWriter $codewriter): void
+    public function generateCode(CodeWriterInterface $codewriter): void
     {
         // noop
     }

@@ -20,6 +20,7 @@ namespace Tests;
 
 use PhpTal\Php\Attribute\TAL\Comment;
 use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\Php\State;
 use Tests\Testcase\PhpTalTestCase;
 use Tests\Testhelper\DummyPhpNode;
@@ -34,7 +35,7 @@ class TalTestCaseCommentTest extends PhpTalTestCase
     private $tag;
 
     /**
-     * @var CodeWriter
+     * @var CodeWriterInterface
      */
     private $gen;
 

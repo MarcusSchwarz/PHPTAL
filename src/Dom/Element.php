@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Dom;
@@ -17,18 +21,19 @@ namespace PhpTal\Dom;
 use PhpTal\Exception\ParserException;
 use PhpTal\Exception\PhpTalException;
 use PhpTal\Exception\TemplateException;
-use PhpTal\Php\CodeWriter;
+use PhpTal\Php\CodeWriterInterface;
 use PhpTal\PHPTAL;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttribute;
 use PhpTal\TalNamespace\Builtin;
-use PhpTal\TalNamespaceAttribute;
-use PhpTal\TalNamespaceAttributeContent;
-use PhpTal\TalNamespaceAttributeReplace;
-use PhpTal\TalNamespaceAttributeSurround;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttributeContent;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttributeReplace;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttributeSurround;
 
 /**
  * Document Tag representation.
  *
- * @package PHPTAL
+ * @internal
+ * {@internal Testhelper\DummyPhpNode extends Element...}
  */
 class Element extends Node
 {
@@ -246,12 +251,12 @@ class Element extends Node
     /**
      * use CodeWriter to compile this element to PHP code
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @throws TemplateException
      * @throws PhpTalException
      */
-    public function generateCode(CodeWriter $codewriter): void
+    public function generateCode(CodeWriterInterface $codewriter): void
     {
         try {
             /// self-modifications
@@ -305,22 +310,6 @@ class Element extends Node
     public function setAttributeNodes(array $nodes): void
     {
         $this->attribute_nodes = $nodes;
-    }
-
-    /** Returns true if the element contains specified PHPTAL attribute.
-     *
-     * @param string $qname
-     *
-     * @return bool
-     */
-    public function hasAttribute(string $qname): bool
-    {
-        foreach ($this->attribute_nodes as $attr) {
-            if ($attr->getQualifiedName() === $qname) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -473,11 +462,11 @@ class Element extends Node
     // ~~~~~ Generation methods may be called by some PHPTAL attributes ~~~~~
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    public function generateSurroundHead(CodeWriter $codewriter): void
+    public function generateSurroundHead(CodeWriterInterface $codewriter): void
     {
         foreach ($this->surroundAttributes as $att) {
             $att->before($codewriter);
@@ -485,12 +474,12 @@ class Element extends Node
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws PhpTalException
      */
-    public function generateHead(CodeWriter $codewriter): void
+    public function generateHead(CodeWriterInterface $codewriter): void
     {
         if ($this->headFootDisabled) {
             return;
@@ -521,12 +510,12 @@ class Element extends Node
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param bool $realContent
      *
      * @return void
      */
-    public function generateContent(CodeWriter $codewriter, bool $realContent = null): void
+    public function generateContent(CodeWriterInterface $codewriter, bool $realContent = null): void
     {
         if (!$this->isEmptyNode($codewriter->getOutputMode())) {
             if ($realContent || count($this->contentAttributes) === 0) {
@@ -543,12 +532,12 @@ class Element extends Node
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      * @throws PhpTalException
      */
-    public function generateFoot(CodeWriter $codewriter): void
+    public function generateFoot(CodeWriterInterface $codewriter): void
     {
         if ($this->headFootDisabled) {
             return;
@@ -573,11 +562,11 @@ class Element extends Node
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    public function generateSurroundFoot(CodeWriter $codewriter): void
+    public function generateSurroundFoot(CodeWriterInterface $codewriter): void
     {
         $v = count($this->surroundAttributes) - 1;
         for ($i = $v; $i >= 0; $i--) {
@@ -586,11 +575,11 @@ class Element extends Node
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    private function generateAttributes(CodeWriter $codewriter): void
+    private function generateAttributes(CodeWriterInterface $codewriter): void
     {
         $html5mode = ($codewriter->getOutputMode() === PHPTAL::HTML5);
 

@@ -4,20 +4,27 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
-namespace PhpTal;
+namespace PhpTal\TalNamespace;
 
+use PhpTal\Dom\Element;
+use PhpTal\Exception\ConfigurationException;
 use PhpTal\Php\Attribute;
+use PhpTal\TalNamespace\Attribute\TalNamespaceAttribute;
 
 /**
- * @see \PhpTal\TalNamespaceAttribute
+ * @see \PhpTal\TalNamespace\Attribute\TalNamespaceAttribute
  * @package PHPTAL
  */
 abstract class TalNamespace
@@ -42,12 +49,12 @@ abstract class TalNamespace
      *
      * @param string $prefix
      * @param string $namespace_uri
-     * @throws Exception\ConfigurationException
+     * @throws ConfigurationException
      */
     public function __construct(string $prefix, string $namespace_uri)
     {
         if (empty($namespace_uri) || empty($prefix)) {
-            throw new Exception\ConfigurationException("Can't create namespace with empty prefix or namespace URI");
+            throw new ConfigurationException("Can't create namespace with empty prefix or namespace URI");
         }
 
         $this->attributes = [];
@@ -72,26 +79,6 @@ abstract class TalNamespace
     }
 
     /**
-     * @param string $attributeName
-     *
-     * @return bool
-     */
-    public function hasAttribute(string $attributeName): bool
-    {
-        return array_key_exists(strtolower($attributeName), $this->attributes);
-    }
-
-    /**
-     * @param string $attributeName
-     *
-     * @return mixed
-     */
-    public function getAttribute(string $attributeName)
-    {
-        return $this->attributes[strtolower($attributeName)];
-    }
-
-    /**
      * @param TalNamespaceAttribute $attribute
      *
      * @return void
@@ -112,14 +99,14 @@ abstract class TalNamespace
 
     /**
      * @param TalNamespaceAttribute $att
-     * @param Dom\Element $tag
+     * @param Element $tag
      * @param mixed $expression
      *
-     * @return Php\Attribute
+     * @return Attribute
      */
     abstract public function createAttributeHandler(
         TalNamespaceAttribute $att,
-        Dom\Element $tag,
+        Element $tag,
         $expression
     ): Attribute;
 }

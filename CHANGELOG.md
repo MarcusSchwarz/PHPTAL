@@ -1,5 +1,26 @@
 # Changelog
 
+v3.1.0 20xx-xx-xx
+-------
+chores:
+ * changed a lot of classes to "final". Theoretically [tm] this should not break your application. All moved classes
+   where meant to be internal classes, used only by PHPTAL itself. If something breaks, please open a ticket with your
+   usecase!
+ * removed unused functions which should not have been called from outside of PHPTAL. These are:
+   - Defs::namespaceURIToPrefix
+   - Defs::getPredefinedPrefixes
+   - Element::hasAttribute
+   - SaxXmlParser::getSourceFile
+   - SaxXmlParser::getLineNumber
+   - DefaultKeyword::jsonSerialize
+   - NothingKeyword::jsonSerialize
+   - TalNamespace::hasAttribute
+   - TalNamepsace::getAttribute
+ * introducing some interfaces:
+   - CodeWriterInterface
+   - StateInterface
+   - TalesChainExecutorInterface
+
 v3.0.2 2019-09-09
 -------
 chores:

@@ -4,12 +4,16 @@ declare(strict_types=1);
 /**
  * PHPTAL templating engine
  *
+ * Originally developed by Laurent Bedubourg and Kornel Lesiński
+ *
  * @category HTML
  * @package  PHPTAL
  * @author   Laurent Bedubourg <lbedubourg@motion-twin.com>
  * @author   Kornel Lesiński <kornel@aardvarkmedia.co.uk>
+ * @author   See contributors list @ github
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link     http://phptal.org/
+ * @link     https://github.com/SC-Networks/PHPTAL
  */
 
 namespace PhpTal\Php;
@@ -52,20 +56,20 @@ abstract class Attribute
     /**
      * Called before element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    abstract public function before(CodeWriter $codewriter): void;
+    abstract public function before(CodeWriterInterface $codewriter): void;
 
     /**
      * Called after element printing.
      *
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      *
      * @return void
      */
-    abstract public function after(CodeWriter $codewriter): void;
+    abstract public function after(CodeWriterInterface $codewriter): void;
 
     /**
      * Attribute constructor.
@@ -105,12 +109,12 @@ abstract class Attribute
     }
 
     /**
-     * @param CodeWriter $codewriter
+     * @param CodeWriterInterface $codewriter
      * @param string $code
      *
      * @return void
      */
-    protected function doEchoAttribute(CodeWriter $codewriter, string $code): void
+    protected function doEchoAttribute(CodeWriterInterface $codewriter, string $code): void
     {
         if ($this->echoType === self::ECHO_TEXT) {
             $codewriter->doEcho($code);
